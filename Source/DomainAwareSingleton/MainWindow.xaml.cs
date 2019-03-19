@@ -33,15 +33,21 @@ namespace DomainAwareSingleton
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
             if (_otherDomain1 == null)
+            {
                 _otherDomain1 = AppDomain.CreateDomain("otherDomain1");
+                _otherDomain1.SetData(AppDomainHelper.KeyParentAppDomainFrindlyName, AppDomain.CurrentDomain.FriendlyName);
+            }
+
             _otherDomain1.DoCallBack(Test1);
+
             Test1();
         }
 
         private static void Test1()
         {
             var value = Singleton<TestType1>.Instance;
-            MessageBox.Show("Retrieved instance in AppDomain " + AppDomain.CurrentDomain.FriendlyName);
+            string msg = string.Format("Retrieved instance in AppDomain '{0}'.", AppDomain.CurrentDomain.FriendlyName);
+            MessageBox.Show(msg);
             value.Test();
         }
 
@@ -50,7 +56,10 @@ namespace DomainAwareSingleton
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
             if (_otherDomain2 == null)
+            {
                 _otherDomain2 = AppDomain.CreateDomain("otherDomain2");
+                _otherDomain2.SetData(AppDomainHelper.KeyParentAppDomainFrindlyName, AppDomain.CurrentDomain.FriendlyName);
+            }
             Test2();
             _otherDomain2.DoCallBack(Test2);
         }
@@ -58,7 +67,8 @@ namespace DomainAwareSingleton
         private static void Test2()
         {
             var value = Singleton<TestType2>.Instance;
-            MessageBox.Show("Retrieved instance in AppDomain " + AppDomain.CurrentDomain.FriendlyName);
+            string msg = string.Format("Retrieved instance in AppDomain '{0}'.", AppDomain.CurrentDomain.FriendlyName);
+            MessageBox.Show(msg);
             value.Test();
         }
 

@@ -13,6 +13,9 @@ namespace DomainAwareSingleton
     /// </summary>
     public static class AppDomainHelper
     {
+        public static string KeyParentAppDomainFrindlyName = "ParentAppDomainFrindlyName";
+
+
         /// <summary>
         /// The CorRuntimeHost, as an <see cref="ICorRuntimeHost"/>.
         /// </summary>
