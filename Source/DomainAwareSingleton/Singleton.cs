@@ -38,16 +38,11 @@ namespace DomainAwareSingleton
                 
                 // Find the upper most AppDomain, that has registrated the key.
                 AppDomain currentAppDomain = AppDomain.CurrentDomain;
-                AppDomain upperMostUsableDomain = currentAppDomain;
-                object parentDomainFriendlyNameObject = upperMostUsableDomain.GetData(AppDomainHelper.KeyParentAppDomainFrindlyName);
+                AppDomain upperMostUsableAppDomain = currentAppDomain;
+                object parentDomainFriendlyNameObject = upperMostUsableAppDomain.GetData(AppDomainHelper.KeyParentAppDomainFrindlyName);
                 while (parentDomainFriendlyNameObject != null)
-                {                    
-                    ////if (parentDomainFriendlyNameObject == null)
-                    ////{
-                    ////    // We have found the appDoman to use, as this don't have a registreted parent AppDomain.
-                    ////}
-                    ////else
-                    ////{
+                {                   
+
                         string desiredAppDomainFriendlyName = parentDomainFriendlyNameObject as string;
 
                         if (string.IsNullOrEmpty(desiredAppDomainFriendlyName))
@@ -77,8 +72,8 @@ namespace DomainAwareSingleton
                         else
                         {
                             // Note, we don't need to check for testHost
-                            upperMostUsableDomain = parentAppDomain;
-                            parentDomainFriendlyNameObject = upperMostUsableDomain.GetData(AppDomainHelper.KeyParentAppDomainFrindlyName);                          
+                            upperMostUsableAppDomain = parentAppDomain;
+                            parentDomainFriendlyNameObject = upperMostUsableAppDomain.GetData(AppDomainHelper.KeyParentAppDomainFrindlyName);                          
                         }
                   
                 }
@@ -86,7 +81,7 @@ namespace DomainAwareSingleton
                 // We now have the upper most usable AppDomain. Note, this AppDomain can still be a child domain of a 
                 // unitTest domain. But it should be the upper most usable domain for your code.
                 Wrapper wrapper;
-                if (currentAppDomain == upperMostUsableDomain)
+                if (currentAppDomain == upperMostUsableAppDomain)
                 {
                     wrapper = new Wrapper { WrappedInstance = new T() };
                     AppDomain.CurrentDomain.SetData(Name, wrapper);
@@ -94,14 +89,14 @@ namespace DomainAwareSingleton
                 else
                 {
                     //wrapper = upperMostUsableDomain.GetData(Name) as Wrapper;
-                    object obj  = upperMostUsableDomain.GetData(Name);
+                    object obj  = upperMostUsableAppDomain.GetData(Name);
                     wrapper = obj as Wrapper;
                     if (wrapper == null)
                     {
-                        upperMostUsableDomain.DoCallBack(CreateCallback);
+                        upperMostUsableAppDomain.DoCallBack(CreateCallback);
                         //wrapper = upperMostUsableDomain.GetData(Name) as Wrapper;
 
-                        object obj2 = upperMostUsableDomain.GetData(Name);
+                        object obj2 = upperMostUsableAppDomain.GetData(Name);
                         wrapper = obj2 as Wrapper;
                     }
 
@@ -111,24 +106,8 @@ namespace DomainAwareSingleton
             });
         }
 
-        /////// <summary>
-        /////// Returns a lazy that calls into the default domain to create the instance and retrieves a proxy into the current domain.
-        /////// </summary>
-        ////private static Lazy<Wrapper> CreateOnOtherAppDomain()
-        ////{
-        ////    return new Lazy<Wrapper>(() =>
-        ////    {
-        ////        var defaultAppDomain = AppDomainHelper.DefaultAppDomain;
-        ////        var ret = defaultAppDomain.GetData(Name) as Wrapper;
-        ////        if (ret != null)
-        ////            return ret;
-        ////        defaultAppDomain.DoCallBack(CreateCallback);
-        ////        return (Wrapper)defaultAppDomain.GetData(Name);
-        ////    });
-        ////}
-
         /// <summary>
-        /// Ensures the instance is created (and saved in the domain data). This method must only be called on the default AppDomain.
+        /// Ensures the instance is created (and saved in the domain data). This method must only be called on the upperMost Usable AppDomain.
         /// </summary>
         private static void CreateCallback()
         {

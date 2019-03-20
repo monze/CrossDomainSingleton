@@ -87,13 +87,13 @@ namespace DomainAwareSingleton
             subAppDomain.SetData(AppDomainHelper.KeyParentAppDomainFrindlyName, AppDomain.CurrentDomain.FriendlyName);
             subAppDomain.DoCallBack(BottomUpFirstSubAppDomain);
 
-            TestType1 testType1 = Singleton<TestType1>.Instance;
-            Assert.Equal(5, testType1.Count);
-            testType1.SilentTest();
-            testType1.SilentTest();
+            TestType2 testType2 = Singleton<TestType2>.Instance;
+            Assert.Equal(5, testType2.Count);
+            testType2.SilentTest();
+            testType2.SilentTest();
 
-            Assert.Equal("DomainAwareSingleton.xUnitTest", testType1.DomainName);
-            Assert.Equal(7, testType1.Count);
+            Assert.Equal("DomainAwareSingleton.xUnitTest", testType2.DomainName);
+            Assert.Equal(7, testType2.Count);
         }
 
         private static void BottomUpFirstSubAppDomain()
@@ -106,26 +106,26 @@ namespace DomainAwareSingleton
 
             // Remember to set the navigation name.
             subAppDomain.SetData(AppDomainHelper.KeyParentAppDomainFrindlyName, AppDomain.CurrentDomain.FriendlyName);
-            subAppDomain.DoCallBack(BottomUpSecondSubAppDomain);            
+            subAppDomain.DoCallBack(BottomUpSecondSubAppDomain);
 
-            TestType1 testType1 = Singleton<TestType1>.Instance;
+            TestType2 testType2 = Singleton<TestType2>.Instance;
             Assert.Equal("BottomUpFirstSubAppDomain", AppDomain.CurrentDomain.FriendlyName);
-            Assert.Equal(2, testType1.Count);
+            Assert.Equal(2, testType2.Count);
 
-            testType1.SilentTest();
-            testType1.SilentTest();
+            testType2.SilentTest();
+            testType2.SilentTest();
 
-            Assert.Equal(4, testType1.Count);
-            testType1.SilentTest();
+            Assert.Equal(4, testType2.Count);
+            testType2.SilentTest();
         }
 
         private static void BottomUpSecondSubAppDomain()
         {
-            TestType1 testType1 = Singleton<TestType1>.Instance;
+            TestType2 testType2 = Singleton<TestType2>.Instance;
             Assert.Equal("BottomUpSecondSubAppDomain", AppDomain.CurrentDomain.FriendlyName);
-            Assert.Equal(1, testType1.Count);
+            Assert.Equal(1, testType2.Count);
 
-            testType1.SilentTest();
+            testType2.SilentTest();
         }
     }
 }
